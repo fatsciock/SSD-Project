@@ -42,9 +42,6 @@ plt.plot(visitors, label="original")
 plt.legend()
 plt.show()
 
-# tmp = plt.xticks()
-
-
 diff = difference(visitors, 1)
 plt.plot(diff, label="diff")
 plt.legend()
