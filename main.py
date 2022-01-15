@@ -25,15 +25,6 @@ def log_norm(x, mu, sigma):
     return 1 / (x * np.sqrt(2 * np.pi * sigma ** 2)) * np.exp(-(np.log(x) - mu) ** 2 / (2 * sigma ** 2))
 
 
-# def parameter_fitting(data):
-#     x = np.linspace(1, 74, 74)
-#     true_val = [1, 1]
-#     best_vals, _ = curve_fit(log_norm, x, data, p0=true_val)
-#     f = log_norm(x, best_vals[0], best_vals[1])
-#     plt.plot(f)
-#     plt.plot(data)
-#     plt.show()
-
 def model(x, m, q):
     return m * x + q
 
@@ -53,6 +44,16 @@ def parameter_fitting(data):
     plt.show()
 
 
+def plot_all_data(data):
+    visitors_before_covid = data.iloc[:74]
+    visitors_during_covid = data.iloc[73:]
+
+    plt.plot(visitors_before_covid, label="Misurazioni in assenza del COVID-19")
+    plt.plot(visitors_during_covid, 'r-.', label="Misurazioni durante il periodo COVID-19")
+    plt.legend()
+    plt.show()
+
+
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     museum_visitors = pd.read_csv("../../csv/museum-visitors.csv")
@@ -68,24 +69,17 @@ if __name__ == '__main__':
     # Infine si è impostata la colonna contenente le date come indice del DataFrame
     avila_adobe_visitors.set_index('Month', inplace=True)
 
-# plt.plot(visitors, label="original")
-# plt.legend()
-# plt.show()
-#
-# diff = difference(visitors, 1)
-# plt.plot(diff, label="diff")
-# plt.legend()
-# plt.show()
-#
-# log = np.log(visitors)
-# plt.plot(log, label="log")
-# plt.legend()
-# plt.show()
-#
-# logdiff = difference(log, 1)
-# plt.plot(logdiff, label="logdiff")
-# plt.legend()
-# plt.show()
+    # Vengono mostrati i dati in un grafico che evidenzia i valori misurati durante la pandemia
+    # del COVID-19. Tali dati non verranno usati per tutte le elaborazioni successive
+    plot_all_data(avila_adobe_visitors)
+
+    # Esclusione dati del periodo COVID
+    avila_adobe_visitors = avila_adobe_visitors.iloc[:74]
+
+    # Grafico dei valori dei visitatori al museo Avila Adobe che verranno utilizzati da qui in avanti
+    plt.plot(avila_adobe_visitors, label="Visitatori del museo Avila Adobe")
+    plt.legend()
+    plt.show()
 
 '''
 
