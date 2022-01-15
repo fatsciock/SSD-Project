@@ -17,7 +17,7 @@ def plot_all_data(data):
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    museum_visitors = pd.read_csv("../../csv/museum-visitors.csv")
+    museum_visitors = pd.read_csv("Data/museum-visitors.csv")
 
     # Si è scelto di lavorare sui visitatori del museo 'Avila Adobe'
     museum_name = "Avila Adobe"
