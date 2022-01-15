@@ -25,6 +25,31 @@ def plot_data(data):
     plt.show()
 
 
+def linear_trend(x, m, q):
+    return np.array(m * x + q)
+
+
+def RMSE(y_actual, y_predicted):
+    return np.sqrt(np.mean((y_predicted - y_actual) ** 2))
+
+
+def fit_trend_model(data):
+    x = np.linspace(0, 73, 74)
+    initial_guess = [-1, 1]
+
+    best_params, _ = curve_fit(linear_trend, x, data, p0=initial_guess)
+    print("I migliori parametri per la retta di regressione sono: m={0}, q={1}".format(round(best_params[0], 2),
+                                                                                       round(best_params[1], 2)))
+    yfit = linear_trend(x, best_params[0], best_params[1])
+    rmse = RMSE(data, yfit)
+    print("La loss calcolata tramite RMSE è pari a {}".format(round(rmse, 3)))
+
+    plt.plot(data)
+    plt.plot(yfit, label="Trend lineare decrescente")
+    plt.legend()
+    plt.show()
+
+
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     museum_visitors = pd.read_csv("Data/museum-visitors.csv")
@@ -48,6 +73,7 @@ if __name__ == '__main__':
     # Esclusione dati del periodo COVID
     avila_adobe_visitors = avila_adobe_visitors.iloc[:74]
 
+    fit_trend_model(museum_visitors[museum_name].iloc[:74].values)
 
 '''
 PARTE 1
