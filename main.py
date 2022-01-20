@@ -8,8 +8,9 @@ import os
 
 
 def plot_data(museum):
-    visitors_before_covid = museum.iloc[:74]
-    visitors_during_covid = museum.iloc[73:]
+    period_without_covid = 74
+    visitors_before_covid = museum.iloc[:period_without_covid]
+    visitors_during_covid = museum.iloc[period_without_covid - 1:]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
     fig.suptitle("Grafici dei dati con e senza le misurazioni nel periodo COVID-19")
@@ -27,7 +28,7 @@ def plot_data(museum):
 
 def plot_pearson(pearson_indexes, max_pearson):
     plt.title("Individuazione della stagionalità tramite l'indice di Pearson")
-    x = np.linspace(0, len(pearson_indexes), len(pearson_indexes))
+    x = np.linspace(0, len(pearson_indexes) - 1, len(pearson_indexes))
     barlist = plt.bar(x, pearson_indexes)
     barlist[max_pearson["index"]].set_color("r")
     plt.text(max_pearson["index"], 0.95,
@@ -78,14 +79,14 @@ def plot_notrend_noseason(nt, ns):
 def plot_model(museum, ts):
     data = museum.Visitors
     plt.title("Comparazione dati originali con il modello ottenuto")
-    plt.plot(np.linspace(0, len(data), len(data)), data, label="Dati originali")
+    plt.plot(np.linspace(0, len(data), len(data) + 1), data, label="Dati originali")
     plt.plot(ts, 'r--', label="Modello")
     plt.legend()
     plt.show()
 
 
 def fit_trend_model(museum):
-    x = np.linspace(0, 73, 74)
+    x = np.linspace(0, len(museum) - 1, len(museum))
     initial_guess = [-1, 1]
     data = museum.Visitors.to_numpy()
 
