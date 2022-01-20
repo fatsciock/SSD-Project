@@ -37,9 +37,25 @@ def plot_pearson(pearson_indexes, max_pearson):
 
 
 def plot_seasonal_decomposition(museum, period):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10))
+
+    mul = seasonal_decompose(museum.Visitors, model='multiplicative', period=period)
+    add = seasonal_decompose(museum.Visitors, model='additive', period=period)
+
+    ax1.plot(museum.Visitors, label="Dati originali")
+    ax1.legend()
+
+    ax2.semilogy(mul.resid, 'bo', label="Modello moltiplicativo")
+    ax2.semilogy(add.resid, 'ro', label="Modello additivo")
+    ax2.set_yscale("symlog")
+    ax2.legend()
+    ax2.plot()
+
+    fig.suptitle("Confronto dei residui tra modello moltiplicativo e additivo")
+    plt.show()
+
     plt.rcParams['figure.figsize'] = (10.0, 6.0)
-    result = seasonal_decompose(museum.Visitors, model='multiplicative', period=period)
-    result.plot()
+    mul.plot()
     plt.show()
 
 
@@ -63,7 +79,7 @@ def plot_model(museum, ts):
     data = museum.Visitors
     plt.title("Comparazione dati originali con il modello ottenuto")
     plt.plot(np.linspace(0, len(data), len(data)), data, label="Dati originali")
-    plt.plot(ts, label="Modello")
+    plt.plot(ts, 'r--', label="Modello")
     plt.legend()
     plt.show()
 
