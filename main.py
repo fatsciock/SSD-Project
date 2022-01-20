@@ -7,9 +7,9 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 import os
 
 
-def plot_data(data):
-    visitors_before_covid = data.iloc[:74]
-    visitors_during_covid = data.iloc[73:]
+def plot_data(museum):
+    visitors_before_covid = museum.iloc[:74]
+    visitors_during_covid = museum.iloc[73:]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
     fig.suptitle("Grafici dei dati con e senza le misurazioni nel periodo COVID-19")
@@ -25,19 +25,47 @@ def plot_data(data):
     plt.show()
 
 
-def plot_seasonal_decomposition(museum, found_period):
+def plot_pearson(pearson_indexes, max_pearson):
+    plt.title("Individuazione della stagionalità tramite l'indice di Pearson")
+    x = np.linspace(0, len(pearson_indexes), len(pearson_indexes))
+    barlist = plt.bar(x, pearson_indexes)
+    barlist[max_pearson["index"]].set_color("r")
+    plt.text(max_pearson["index"], 0.95,
+             "Valore massimo: {0}\nIndice: {1}".format(round(max_pearson["pearson"], 2), max_pearson["index"]),
+             fontsize=8, color="red", ha="center")
+    plt.show()
+
+
+def plot_seasonal_decomposition(museum, period):
     plt.rcParams['figure.figsize'] = (10.0, 6.0)
-    result = seasonal_decompose(museum.Visitors, model='multiplicative', period=found_period)
+    result = seasonal_decompose(museum.Visitors, model='multiplicative', period=period)
     result.plot()
     plt.show()
 
 
-def linear_trend(x, m, q):
-    return np.array(m * x + q)
+def plot_trend(data, yfit):
+    plt.title("Individuazione del trend")
+    plt.plot(data, label="Dati originali")
+    plt.plot(yfit, label="Trend lineare decrescente")
+    plt.legend()
+    plt.show()
 
 
-def RMSE(y_actual, y_predicted):
-    return np.sqrt(np.mean((y_predicted - y_actual) ** 2))
+def plot_notrend_noseason(nt, ns):
+    plt.title("Eliminazione trend e stagionalità")
+    plt.plot(nt, label="Dati senza trend")
+    plt.plot(ns, label="Dati senza trend e stagionalità")
+    plt.legend()
+    plt.show()
+
+
+def plot_model(museum, ts):
+    data = museum.Visitors
+    plt.title("Comparazione dati originali con il modello ottenuto")
+    plt.plot(np.linspace(0, len(data), len(data)), data, label="Dati originali")
+    plt.plot(ts, label="Modello")
+    plt.legend()
+    plt.show()
 
 
 def fit_trend_model(museum):
@@ -52,11 +80,9 @@ def fit_trend_model(museum):
     rmse = RMSE(data, yfit)
     print("La loss calcolata tramite RMSE è pari a {}".format(round(rmse, 3)))
 
-    plt.plot(data)
-    plt.plot(yfit, label="Trend lineare decrescente")
-    plt.title("Individuazione del trend")
-    plt.legend()
-    plt.show()
+    plot_trend(data, yfit)
+
+    return yfit
 
 
 def find_seasonality(museum):
@@ -67,23 +93,26 @@ def find_seasonality(museum):
     # gli stessi identici dati.
     pearson_indexes = [1]
 
-    for i in range(1, 24):
-        tmp, _ = pearsonr(data[24:], data[24-i: -i])
+    shift = 24
+    for i in range(1, shift):
+        tmp, _ = pearsonr(data[shift:], data[shift-i: -i])
         pearson_indexes.append(tmp)
         # Si considera un valore superiore a 0.7 come indice di forte correlazione
         if abs(tmp) > max_pearson["pearson"] and abs(tmp) > 0.7:
             max_pearson["index"] = i
             max_pearson["pearson"] = tmp
 
-    plt.title("Individuazione della stagionalità tramite l'indice di Pearson")
-    x = np.linspace(0, len(pearson_indexes), len(pearson_indexes))
-    barlist = plt.bar(x, pearson_indexes)
-    barlist[max_pearson["index"]].set_color("r")
-    plt.text(max_pearson["index"], 0.95, "Valore massimo: {0}\nIndice: {1}".format(round(max_pearson["pearson"], 2), max_pearson["index"]),
-             fontsize=8, color="red", ha="center")
-    plt.show()
+    plot_pearson(pearson_indexes, max_pearson)
 
     return max_pearson
+
+
+def linear_trend(x, m, q):
+    return np.array(m * x + q)
+
+
+def RMSE(y_actual, y_predicted):
+    return np.sqrt(np.mean((y_predicted - y_actual) ** 2))
 
 
 if __name__ == '__main__':
@@ -106,23 +135,50 @@ if __name__ == '__main__':
     # Esclusione dati del periodo COVID
     avila_adobe_visitors = avila_adobe_visitors.iloc[:74]
 
+    # Individuazione del trend
+    trend = fit_trend_model(avila_adobe_visitors)
+
     # Ricerca della stagionalità tramite l'indice di Pearson
     seasonality = find_seasonality(avila_adobe_visitors)
+    number_of_season = seasonality["index"]
 
     # Decomposizione dei dati: vengono mostrati il trend, la stagionalità e i residui
-    plot_seasonal_decomposition(avila_adobe_visitors, seasonality["index"])
+    plot_seasonal_decomposition(avila_adobe_visitors, number_of_season)
 
-    # Individuazione del trend
-    fit_trend_model(avila_adobe_visitors)
+    # Eliminazione del trend
+    notrend = avila_adobe_visitors.Visitors.to_numpy() / trend
 
+    # Ricerca coefficienti di stagionalità
+    season_coeff = []
+    for i in range(number_of_season):
+        temp = []
+        for j in range(i, len(avila_adobe_visitors.Visitors), number_of_season):
+            temp.append(notrend[j])
+        season_coeff.append(np.mean(temp))
+
+    # Partendo dai dati detrendizzati viene eliminata anche la stagionalità
+    noseason = []
+    for i in range(len(trend)):
+        noseason.append(notrend[i] / season_coeff[i % number_of_season])
+
+    # Viene ricreata la funzione che modella i dati a partire dal trend e dai coefficienti di stagionalità trovati
+    trend_season = []
+    for i in range(len(trend)):
+        trend_season.append(trend[i] * season_coeff[i % number_of_season])
+
+    # Plot dei dati senza trend e senza stagionalità
+    plot_notrend_noseason(notrend, noseason)
+
+    # Plot del modello ottenuto
+    plot_model(avila_adobe_visitors, trend_season)
 
 '''
 PARTE 1
 - Trovare funzione di trend e parameter fitting - DONE
-- Eliminare trend - 
-- Determinare se utilizzare un modello moltiplicativo o additivo -
+- Eliminare trend - DONE
+- Determinare se utilizzare un modello moltiplicativo o additivo - 
 - Individuare stagionalità - DONE
-- Destagionalizzare - 
+- Destagionalizzare - DONE
 - Fare previsione con funzione di trend - 
 
 PARTE 2
