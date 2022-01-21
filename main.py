@@ -79,7 +79,7 @@ def plot_notrend_noseason(nt, ns):
 def plot_model(museum, ts):
     data = museum.Visitors
     plt.title("Comparazione dati originali con il modello ottenuto")
-    plt.plot(np.linspace(0, len(data), len(data) + 1), data, label="Dati originali")
+    plt.plot(np.linspace(0, len(data) - 1, len(data)), data, label="Dati originali")
     plt.plot(ts, 'r--', label="Modello")
     plt.legend()
     plt.show()
