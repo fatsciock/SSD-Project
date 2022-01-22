@@ -89,7 +89,7 @@ def fit_trend_model(museum):
                                                                                        round(best_params[1], 2)))
     yfit = linear_trend(x, best_params[0], best_params[1])
     rmse = RMSE(data, yfit)
-    print("La loss calcolata tramite RMSE è pari a {}".format(round(rmse, 3)))
+    print("La loss del trend calcolata tramite RMSE è pari a {}".format(round(rmse, 3)))
 
     plot_trend(data, yfit)
 
@@ -213,6 +213,10 @@ if __name__ == '__main__':
 
     # Plot della previsione effettuata
     plot_prediction(avila_adobe_visitors, trend_season, predicted, y_predict, number_of_measurements, len_to_predict)
+
+    # Calcolo dell'errore commesso dal modello
+    rmse = RMSE(avila_adobe_visitors.Visitors.to_numpy(), np.array(trend_season))
+    print("La loss del modello calcolata tramite RMSE è pari a {}".format(round(rmse, 3)))
 
 '''
 PARTE 1
