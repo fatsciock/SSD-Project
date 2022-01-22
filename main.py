@@ -93,7 +93,7 @@ def fit_trend_model(museum):
 
     plot_trend(data, yfit)
 
-    return yfit
+    return yfit, best_params
 
 
 def find_seasonality(museum):
@@ -126,6 +126,21 @@ def RMSE(y_actual, y_predicted):
     return np.sqrt(np.mean((y_predicted - y_actual) ** 2))
 
 
+def plot_prediction(museum, trend_season_data, predicted_data, regression, n1, n2):
+    data = museum.Visitors
+
+    plt.plot(np.linspace(0, n1 - 1, n1),
+             data, label="Dati originali")
+    plt.plot(np.linspace(0, n1 - 1, n1),
+             trend_season_data, 'r--', label="Modello")
+    plt.plot(np.linspace(73, n2, n2 - 73),
+             predicted_data[73:], '--', label="Previsione")
+    plt.plot(regression, label="Trend")
+    plt.title("Previsione dei dati su 24 periodi")
+    plt.legend()
+    plt.show()
+
+
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     museum_visitors = pd.read_csv("Data/museum-visitors.csv", parse_dates=["Month"])
@@ -145,9 +160,10 @@ if __name__ == '__main__':
 
     # Esclusione dati del periodo COVID
     avila_adobe_visitors = avila_adobe_visitors.iloc[:74]
+    number_of_measurements = len(avila_adobe_visitors.Visitors)
 
     # Individuazione del trend
-    trend = fit_trend_model(avila_adobe_visitors)
+    trend, regression_params = fit_trend_model(avila_adobe_visitors)
 
     # Ricerca della stagionalità tramite l'indice di Pearson
     seasonality = find_seasonality(avila_adobe_visitors)
@@ -163,7 +179,7 @@ if __name__ == '__main__':
     season_coeff = []
     for i in range(number_of_season):
         temp = []
-        for j in range(i, len(avila_adobe_visitors.Visitors), number_of_season):
+        for j in range(i, number_of_measurements, number_of_season):
             temp.append(notrend[j])
         season_coeff.append(np.mean(temp))
 
@@ -183,14 +199,29 @@ if __name__ == '__main__':
     # Plot del modello ottenuto
     plot_model(avila_adobe_visitors, trend_season)
 
+    # Costruzione del modello tramite il quale prevedere i prossimi 24 periodi.
+    # Vengono utilizzati i coefficienti della retta di regressione del trend e
+    # i coefficienti di stagionalità trovati precedentemente
+    period_to_predict = 24
+    len_to_predict = number_of_measurements + period_to_predict
+    x_predict = np.linspace(0, len_to_predict - 1, len_to_predict)
+    y_predict = linear_trend(x_predict, regression_params[0], regression_params[1])
+
+    predicted = []
+    for i in range(len(x_predict)):
+        predicted.append(y_predict[i] * season_coeff[i % number_of_season])
+
+    # Plot della previsione effettuata
+    plot_prediction(avila_adobe_visitors, trend_season, predicted, y_predict, number_of_measurements, len_to_predict)
+
 '''
 PARTE 1
 - Trovare funzione di trend e parameter fitting - DONE
 - Eliminare trend - DONE
-- Determinare se utilizzare un modello moltiplicativo o additivo - 
+- Determinare se utilizzare un modello moltiplicativo o additivo - DONE
 - Individuare stagionalità - DONE
 - Destagionalizzare - DONE
-- Fare previsione con funzione di trend - 
+- Fare previsione con funzione di trend - DONE  
 
 PARTE 2
 - Fare previsione con modelli predittivi statistici e neurali
