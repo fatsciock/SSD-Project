@@ -1,9 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.graphics.tsaplots import plot_acf
 
 
 def plot_data(museum):
+    """
+    Plot che evidenzia i valori misurati durante la pandemia del COVID-19.
+    Viene anche mostrato un grafico dei dati esenti dagli effetti della pandemia.
+    :param museum: Museo di cui vengono mostrati i dati
+    :return: void
+    """
     period_without_covid = 74
     visitors_before_covid = museum.iloc[:period_without_covid]
     visitors_during_covid = museum.iloc[period_without_covid - 1:]
@@ -87,6 +94,12 @@ def plot_prediction(museum, trend_season_data, predicted_data, regression, n1, n
     plt.plot(regression, label="Trend")
     plt.title("Previsione dei dati su 24 periodi")
     plt.legend()
+    plt.show()
+
+
+def plot_autocorrelation(museum):
+    data = museum.Visitors
+    plot_acf(data)
     plt.show()
 
 

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from plot_functions import *
+from utility_functions import *
 from scipy.optimize import curve_fit
 from scipy.stats import pearsonr
 import os
@@ -49,44 +50,35 @@ def linear_trend(x, m, q):
     return np.array(m * x + q)
 
 
-def RMSE(y_actual, y_predicted):
-    return np.sqrt(np.mean((y_predicted - y_actual) ** 2))
-
-
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    museum_visitors = pd.read_csv("Data/museum-visitors.csv", parse_dates=["Month"], index_col=0)
+    all_visitors = pd.read_csv("Data/museum-visitors.csv", parse_dates=["Month"], index_col=0)
 
     # plot_all_museums(museum_visitors)
 
     # Si è scelto di lavorare sui visitatori del museo 'Avila Adobe'
-    museum_name = "Avila Adobe"
-    avila_adobe_visitors = museum_visitors.loc[:, [museum_name]]
+    museum_visitors = get_visitors_of("Avila Adobe", all_visitors)
 
-    # Si rinomina la colonna relativa ai visitatori del museo e si imposta quella delle date come indice
-    avila_adobe_visitors.rename(columns={museum_name: 'Visitors'}, inplace=True)
-
-    # Ora vengono mostrati i dati in un grafico che evidenzia i valori misurati durante la pandemia
-    # del COVID-19. Tali dati non verranno usati per tutte le elaborazioni successive.
-    # Viene anche mostrato un grafico dei dati esenti dagli effetti della pandemia
-    plot_data(avila_adobe_visitors)
+    plot_data(museum_visitors)
 
     # Esclusione dati del periodo COVID
-    avila_adobe_visitors = avila_adobe_visitors.iloc[:74]
-    number_of_measurements = len(avila_adobe_visitors.Visitors)
+    museum_visitors = museum_visitors.iloc[:74]
+    number_of_measurements = len(museum_visitors.Visitors)
+
+    # check_stationarity(museum_visitors)
 
     # Individuazione del trend
-    trend, regression_params = fit_trend_model(avila_adobe_visitors)
+    trend, regression_params = fit_trend_model(museum_visitors)
 
     # Ricerca della stagionalità tramite l'indice di Pearson
-    seasonality = find_seasonality(avila_adobe_visitors)
+    seasonality = find_seasonality(museum_visitors)
     number_of_season = seasonality["index"]
 
     # Decomposizione dei dati: vengono mostrati il trend, la stagionalità e i residui
-    plot_seasonal_decomposition(avila_adobe_visitors, number_of_season)
+    plot_seasonal_decomposition(museum_visitors, number_of_season)
 
     # Eliminazione del trend
-    notrend = avila_adobe_visitors.Visitors.to_numpy() / trend
+    notrend = museum_visitors.Visitors.to_numpy() / trend
 
     # Ricerca coefficienti di stagionalità
     season_coeff = []
@@ -110,7 +102,7 @@ if __name__ == '__main__':
     plot_notrend_noseason(notrend, noseason)
 
     # Plot del modello ottenuto
-    plot_model(avila_adobe_visitors, trend_season)
+    plot_model(museum_visitors, trend_season)
 
     # Costruzione del modello tramite il quale prevedere i prossimi 24 periodi.
     # Vengono utilizzati i coefficienti della retta di regressione del trend e
@@ -125,10 +117,10 @@ if __name__ == '__main__':
         predicted.append(y_predict[i] * season_coeff[i % number_of_season])
 
     # Plot della previsione effettuata
-    plot_prediction(avila_adobe_visitors, trend_season, predicted, y_predict, number_of_measurements, len_to_predict)
+    plot_prediction(museum_visitors, trend_season, predicted, y_predict, number_of_measurements, len_to_predict)
 
     # Calcolo dell'errore commesso dal modello
-    rmse = RMSE(avila_adobe_visitors.Visitors.to_numpy(), np.array(trend_season))
+    rmse = RMSE(museum_visitors.Visitors.to_numpy(), np.array(trend_season))
     print("La loss del modello calcolata tramite RMSE è pari a {}\n".format(round(rmse, 3)))
 
     # Algoritmo predittivo statistico
