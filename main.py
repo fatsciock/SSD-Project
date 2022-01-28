@@ -1,82 +1,9 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+from plot_functions import *
 from scipy.optimize import curve_fit
 from scipy.stats import pearsonr
-from statsmodels.tsa.seasonal import seasonal_decompose
 import os
-
-
-def plot_data(museum):
-    period_without_covid = 74
-    visitors_before_covid = museum.iloc[:period_without_covid]
-    visitors_during_covid = museum.iloc[period_without_covid - 1:]
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-    fig.suptitle("Grafici dei dati con e senza le misurazioni nel periodo COVID-19")
-
-    ax1.plot(visitors_before_covid.Visitors, label="Visitatori in assenza del COVID-19")
-    ax1.plot(visitors_during_covid.Visitors, 'r-.', label="Visitatori durante il periodo COVID-19")
-    ax1.legend()
-
-    # Grafico dei valori dei visitatori al museo Avila Adobe che verranno utilizzati da qui in avanti
-    ax2.plot(visitors_before_covid.Visitors, label="Visitatori in assenza del COVID-19")
-    ax2.legend()
-
-    plt.show()
-
-
-def plot_pearson(pearson_indexes, max_pearson):
-    plt.title("Individuazione della stagionalità tramite l'indice di Pearson")
-    x = np.linspace(0, len(pearson_indexes) - 1, len(pearson_indexes))
-    barlist = plt.bar(x, pearson_indexes)
-    barlist[max_pearson["index"]].set_color("r")
-    plt.text(max_pearson["index"], 0.95,
-             "Valore massimo: {0}\nIndice: {1}".format(round(max_pearson["pearson"], 2), max_pearson["index"]),
-             fontsize=8, color="red", ha="center")
-    plt.show()
-
-
-def plot_seasonal_decomposition(museum, period):
-    mul = seasonal_decompose(museum.Visitors, model='multiplicative', period=period)
-    add = seasonal_decompose(museum.Visitors, model='additive', period=period)
-
-    plt.semilogy(mul.resid, 'bo', label="Modello moltiplicativo")
-    plt.semilogy(add.resid, 'ro', label="Modello additivo")
-    plt.yscale("symlog")
-    plt.legend()
-    plt.plot()
-    plt.title("Confronto dei residui tra modello moltiplicativo e additivo")
-    plt.show()
-
-    plt.rcParams['figure.figsize'] = (10.0, 6.0)
-    mul.plot()
-    plt.show()
-
-
-def plot_trend(data, yfit):
-    plt.title("Individuazione del trend")
-    plt.plot(data, label="Dati originali")
-    plt.plot(yfit, label="Trend lineare decrescente")
-    plt.legend()
-    plt.show()
-
-
-def plot_notrend_noseason(nt, ns):
-    plt.title("Eliminazione trend e stagionalità")
-    plt.plot(nt, label="Dati senza trend")
-    plt.plot(ns, label="Dati senza trend e stagionalità")
-    plt.legend()
-    plt.show()
-
-
-def plot_model(museum, ts):
-    data = museum.Visitors
-    plt.title("Comparazione dati originali con il modello ottenuto")
-    plt.plot(np.linspace(0, len(data) - 1, len(data)), data, label="Dati originali")
-    plt.plot(ts, 'r--', label="Modello")
-    plt.legend()
-    plt.show()
 
 
 def fit_trend_model(museum):
@@ -126,32 +53,18 @@ def RMSE(y_actual, y_predicted):
     return np.sqrt(np.mean((y_predicted - y_actual) ** 2))
 
 
-def plot_prediction(museum, trend_season_data, predicted_data, regression, n1, n2):
-    data = museum.Visitors
-
-    plt.plot(np.linspace(0, n1 - 1, n1),
-             data, label="Dati originali")
-    plt.plot(np.linspace(0, n1 - 1, n1),
-             trend_season_data, 'r--', label="Modello")
-    plt.plot(np.linspace(73, n2, n2 - 73),
-             predicted_data[73:], '--', label="Previsione")
-    plt.plot(regression, label="Trend")
-    plt.title("Previsione dei dati su 24 periodi")
-    plt.legend()
-    plt.show()
-
-
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    museum_visitors = pd.read_csv("Data/museum-visitors.csv", parse_dates=["Month"])
+    museum_visitors = pd.read_csv("Data/museum-visitors.csv", parse_dates=["Month"], index_col=0)
+
+    # plot_all_museums(museum_visitors)
 
     # Si è scelto di lavorare sui visitatori del museo 'Avila Adobe'
     museum_name = "Avila Adobe"
-    avila_adobe_visitors = museum_visitors.loc[:, ["Month", museum_name]]
+    avila_adobe_visitors = museum_visitors.loc[:, [museum_name]]
 
     # Si rinomina la colonna relativa ai visitatori del museo e si imposta quella delle date come indice
     avila_adobe_visitors.rename(columns={museum_name: 'Visitors'}, inplace=True)
-    avila_adobe_visitors.set_index('Month', inplace=True)
 
     # Ora vengono mostrati i dati in un grafico che evidenzia i valori misurati durante la pandemia
     # del COVID-19. Tali dati non verranno usati per tutte le elaborazioni successive.
@@ -216,7 +129,11 @@ if __name__ == '__main__':
 
     # Calcolo dell'errore commesso dal modello
     rmse = RMSE(avila_adobe_visitors.Visitors.to_numpy(), np.array(trend_season))
-    print("La loss del modello calcolata tramite RMSE è pari a {}".format(round(rmse, 3)))
+    print("La loss del modello calcolata tramite RMSE è pari a {}\n".format(round(rmse, 3)))
+
+    # Algoritmo predittivo statistico
+
+    # Algoritmo predittivo neurale
 
 '''
 PARTE 1
