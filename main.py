@@ -3,7 +3,7 @@ import pandas as pd
 from plot_functions import *
 from utility_functions import *
 from trend_season_functions import *
-
+from statiscal_algorithm import *
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -19,8 +19,6 @@ if __name__ == '__main__':
     # Esclusione dati del periodo COVID
     museum_visitors = museum_visitors.iloc[:74]
     number_of_measurements = len(museum_visitors.Visitors)
-
-    # check_stationarity(museum_visitors)
 
     # Individuazione del trend
     trend, regression_params = fit_trend_model(museum_visitors)
@@ -78,6 +76,10 @@ if __name__ == '__main__':
     print("La loss del modello calcolata tramite RMSE è pari a {}\n".format(round(rmse, 3)))
 
     # Algoritmo predittivo statistico
+
+    # check_stationarity(museum_visitors)
+
+    run_statistical_algorithm(number_of_measurements, museum_visitors)
 
     # Algoritmo predittivo neurale
 

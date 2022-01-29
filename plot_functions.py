@@ -97,9 +97,26 @@ def plot_prediction(museum, trend_season_data, predicted_data, regression, n1, n
     plt.show()
 
 
+def plot_SARIMA_predicition(x, xfore, yfore, ypred, ci, cutpoint, period_to_predict, museum):
+    data = museum.Visitors
+
+    plt.plot(x, data, label="Dati originali")
+    plt.plot(x[:cutpoint], ypred, 'y', label="Modello (train set)")
+    plt.plot(x[cutpoint:], yfore[:-period_to_predict], 'r', label="Modello (test set)")
+    plt.plot(xfore, yfore[period_to_predict - 1:], '--', label="Previsione")
+    plt.legend()
+    plt.title("Previsione dei dati su 24 periodi tramite SARIMA")
+    plt.show()
+
+
 def plot_autocorrelation(museum):
     data = museum.Visitors
     plot_acf(data)
+    plt.show()
+
+
+def plot_diagnostic(fitted_model):
+    fitted_model.plot_diagnostics(figsize=(10, 6))
     plt.show()
 
 

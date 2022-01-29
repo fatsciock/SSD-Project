@@ -63,3 +63,11 @@ def check_stationarity(museum):
 
     adf_test(data)
     kpss_test(data)
+
+
+def print_loss(yfore, ypred, data, cut):
+    rmse_pred = RMSE(data[:cut], np.array(ypred))
+    rmse_fore = RMSE(data[cut:], np.array(yfore))
+    print("La loss del modello SARIMA calcolata tramite RMSE è:\n"
+          "train: {0}\ntest: {1}".format(round(rmse_pred, 3), round(rmse_fore, 3)))
+
