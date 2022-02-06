@@ -82,16 +82,24 @@ def plot_model(museum, ts):
     plt.show()
 
 
-def plot_prediction(museum, trend_season_data, predicted_data, regression, n1, n2):
+def plot_prediction(museum, trend_season_data, predicted_data, regression, n1, n2, dates):
     data = museum.Visitors
 
-    plt.plot(np.linspace(0, n1 - 1, n1),
+    # plt.plot(np.linspace(0, n1 - 1, n1),
+    #          data, label="Dati originali")
+    # plt.plot(np.linspace(0, n1 - 1, n1),
+    #          trend_season_data, 'r--', label="Modello")
+    # plt.plot(np.linspace(73, n2, n2 - 73),
+    #          predicted_data[73:], '--', label="Previsione")
+
+    plt.plot(dates[:len(data)],
              data, label="Dati originali")
-    plt.plot(np.linspace(0, n1 - 1, n1),
+    plt.plot(dates[:len(data)],
              trend_season_data, 'r--', label="Modello")
-    plt.plot(np.linspace(73, n2, n2 - 73),
-             predicted_data[73:], '--', label="Previsione")
-    plt.plot(regression, label="Trend")
+    plt.plot(dates[len(data):],
+             predicted_data[74:], '--', label="Previsione")
+
+    plt.plot(dates, regression, label="Trend")
     plt.title("Previsione dei dati su 24 periodi")
     plt.legend()
     plt.show()
@@ -100,10 +108,10 @@ def plot_prediction(museum, trend_season_data, predicted_data, regression, n1, n
 def plot_SARIMA_predicition(x, xfore, yfore, ypred, ci, cutpoint, period_to_predict, museum):
     data = museum.Visitors
 
-    plt.plot(x, data, label="Dati originali")
+    plt.plot(x[:len(data)], data, label="Dati originali")
     plt.plot(x[:cutpoint], ypred, 'y', label="Modello (train set)")
-    plt.plot(x[cutpoint:], yfore[:-period_to_predict], 'r', label="Modello (test set)")
-    plt.plot(xfore, yfore[period_to_predict - 1:], '--', label="Previsione")
+    plt.plot(x[cutpoint:len(data) + 1], yfore[:-period_to_predict + 1], 'r', label="Modello (test set)")
+    plt.plot(x[len(data):], yfore[period_to_predict - 1:], '--', label="Previsione")
     plt.legend()
     plt.title("Previsione dei dati su 24 periodi tramite SARIMA")
     plt.show()
@@ -124,5 +132,17 @@ def plot_all_museums(museum_visitors):
     for museum in museum_visitors:
         plt.plot(museum_visitors[museum], label=museum)
 
+    plt.legend()
+    plt.show()
+
+
+def plot_MLP_forecasts(museum_visitors, predictions_y, forecasts_y, periods_to_forecast, cutpoint):
+    numbers_of_measurements = len(museum_visitors)
+    predictions_x = np.linspace(0, numbers_of_measurements - 1, numbers_of_measurements)
+    forecasts_x = np.linspace(numbers_of_measurements, numbers_of_measurements + periods_to_forecast - 1, periods_to_forecast)
+
+    plt.plot(predictions_x, museum_visitors.Visitors, label='data')
+    plt.plot(predictions_x[6:cutpoint], predictions_y, label='predictions')
+    # plt.plot(forecasts_x[cutpoint:], forecasts_y, label='firecasts')
     plt.legend()
     plt.show()

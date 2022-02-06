@@ -4,6 +4,7 @@ from plot_functions import *
 from utility_functions import *
 from trend_season_functions import *
 from statiscal_algorithm import *
+from neural_algorithms import *
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -64,12 +65,15 @@ if __name__ == '__main__':
     x_predict = np.linspace(0, len_to_predict - 1, len_to_predict)
     y_predict = linear_trend(x_predict, regression_params[0], regression_params[1])
 
+    # Estensione delle date per includere i valori predetti
+    extended_dates = extend_dates(museum_visitors, period_to_predict)
+
     predicted = []
     for i in range(len(x_predict)):
         predicted.append(y_predict[i] * season_coeff[i % seasonality])
 
     # Plot della previsione effettuata
-    plot_prediction(museum_visitors, trend_season, predicted, y_predict, number_of_measurements, len_to_predict)
+    plot_prediction(museum_visitors, trend_season, predicted, y_predict, number_of_measurements, len_to_predict, dates=extended_dates)
 
     # Calcolo dell'errore commesso dal modello
     rmse = RMSE(museum_visitors.Visitors.to_numpy(), np.array(trend_season))
@@ -79,9 +83,10 @@ if __name__ == '__main__':
 
     # check_stationarity(museum_visitors)
 
-    run_statistical_algorithm(number_of_measurements, museum_visitors)
+    run_statistical_algorithm(number_of_measurements, museum_visitors, extended_dates)
 
     # Algoritmo predittivo neurale
+    # run_neural_algorithms(museum_visitors, seasonality)
 
 '''
 PARTE 1

@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+from datetime import datetime
 from plot_functions import plot_autocorrelation
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.stattools import kpss
@@ -70,4 +72,12 @@ def print_loss(yfore, ypred, data, cut):
     rmse_fore = RMSE(data[cut:], np.array(yfore))
     print("La loss del modello SARIMA calcolata tramite RMSE è:\n"
           "train: {0}\ntest: {1}".format(round(rmse_pred, 3), round(rmse_fore, 3)))
+
+
+def extend_dates(museum_visitors, periods_to_extend):
+    all_dates = museum_visitors.index
+    start_date = all_dates[0]
+    periods = periods_to_extend + len(all_dates)
+    extended_dates = pd.date_range(start=start_date, periods=periods, freq='MS').tolist()
+    return extended_dates
 
