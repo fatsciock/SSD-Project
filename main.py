@@ -73,7 +73,7 @@ if __name__ == '__main__':
         predicted.append(y_predict[i] * season_coeff[i % seasonality])
 
     # Plot della previsione effettuata
-    plot_prediction(museum_visitors, trend_season, predicted, y_predict, number_of_measurements, len_to_predict, dates=extended_dates)
+    plot_prediction(museum_visitors, trend_season, predicted, y_predict, extended_dates)
 
     # Calcolo dell'errore commesso dal modello
     rmse = RMSE(museum_visitors.Visitors.to_numpy(), np.array(trend_season))
@@ -83,10 +83,10 @@ if __name__ == '__main__':
 
     # check_stationarity(museum_visitors)
 
-    run_statistical_algorithm(number_of_measurements, museum_visitors, extended_dates)
+    # run_statistical_algorithm(number_of_measurements, museum_visitors, extended_dates)
 
     # Algoritmo predittivo neurale
-    # run_neural_algorithms(museum_visitors, seasonality)
+    run_neural_algorithms(museum_visitors, seasonality, extended_dates)
 
 '''
 PARTE 1

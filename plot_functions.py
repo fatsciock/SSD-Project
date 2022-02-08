@@ -82,15 +82,8 @@ def plot_model(museum, ts):
     plt.show()
 
 
-def plot_prediction(museum, trend_season_data, predicted_data, regression, n1, n2, dates):
+def plot_prediction(museum, trend_season_data, predicted_data, regression, dates):
     data = museum.Visitors
-
-    # plt.plot(np.linspace(0, n1 - 1, n1),
-    #          data, label="Dati originali")
-    # plt.plot(np.linspace(0, n1 - 1, n1),
-    #          trend_season_data, 'r--', label="Modello")
-    # plt.plot(np.linspace(73, n2, n2 - 73),
-    #          predicted_data[73:], '--', label="Previsione")
 
     plt.plot(dates[:len(data)],
              data, label="Dati originali")
@@ -136,13 +129,13 @@ def plot_all_museums(museum_visitors):
     plt.show()
 
 
-def plot_MLP_forecasts(museum_visitors, predictions_y, forecasts_y, periods_to_forecast, cutpoint):
+def plot_MLP_forecasts(museum_visitors, predictions_training_y, predictions_test_y, forecasts_y, cutpoint, dates):
     numbers_of_measurements = len(museum_visitors)
-    predictions_x = np.linspace(0, numbers_of_measurements - 1, numbers_of_measurements)
-    forecasts_x = np.linspace(numbers_of_measurements, numbers_of_measurements + periods_to_forecast - 1, periods_to_forecast)
 
-    plt.plot(predictions_x, museum_visitors.Visitors, label='data')
-    plt.plot(predictions_x[6:cutpoint], predictions_y, label='predictions')
-    # plt.plot(forecasts_x[cutpoint:], forecasts_y, label='firecasts')
+    plt.title("Previsione dei dati su 24 periodi tramite MLP")
+    plt.plot(dates[:numbers_of_measurements], museum_visitors.Visitors, label='Visitatori museo')
+    plt.plot(dates[12:cutpoint], predictions_training_y, label='Previsione sul training set')
+    plt.plot(dates[cutpoint:numbers_of_measurements], predictions_test_y, label='Previsione sul test set')
+    plt.plot(dates[numbers_of_measurements:], forecasts_y, label="Previsione su ulteriori 24 periodi")
     plt.legend()
     plt.show()
