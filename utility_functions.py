@@ -80,4 +80,3 @@ def extend_dates(museum_visitors, periods_to_extend):
     periods = periods_to_extend + len(all_dates)
     extended_dates = pd.date_range(start=start_date, periods=periods, freq='MS').tolist()
     return extended_dates
-
