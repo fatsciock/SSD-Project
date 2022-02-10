@@ -10,7 +10,11 @@ from utility_functions import RMSE, create_dataset
 def run_LSTM(museum_visitors, dates):
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
     cutpoint = int(0.8 * len(museum_visitors.Visitors))
+
     look_back = 12
+    n_input = look_back
+    n_hidden = 20
+    n_output = 1
 
     # Preprocessing dei dati
     scaler = MinMaxScaler((0.1, 0.9))
@@ -27,9 +31,6 @@ def run_LSTM(museum_visitors, dates):
     testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
     lstm_model = Sequential()
-    n_input = look_back
-    n_hidden = 20
-    n_output = 1
     lstm_model.add(LSTM(n_hidden, activation="relu", input_shape=(n_output, n_input), dropout=0.05))
     lstm_model.add(Dense(1))
     lstm_model.compile(optimizer="adam", loss="mse")

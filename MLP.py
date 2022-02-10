@@ -22,7 +22,7 @@ def forecast_visitors(neural_net, museum_visitors, periods_to_forecast):
     return forecasts
 
 
-def run_neural_algorithms(museum_visitors, seasonality, dates):
+def run_MLP(museum_visitors, seasonality, dates):
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
     cutpoint = int(0.8 * len(museum_visitors.Visitors))
 

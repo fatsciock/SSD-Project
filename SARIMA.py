@@ -5,7 +5,7 @@ from plot_functions import plot_SARIMA_predicition, plot_diagnostic
 from utility_functions import print_loss
 
 
-def run_statistical_algorithm(number_of_measurements, museum_visitors, extended_dates):
+def run_SARIMA(number_of_measurements, museum_visitors, extended_dates):
     cutpoint = int(0.7 * number_of_measurements)
     train_set = museum_visitors.Visitors[:cutpoint]
     test_set = museum_visitors.Visitors[cutpoint:]
