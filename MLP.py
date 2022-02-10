@@ -22,7 +22,7 @@ def forecast_visitors(neural_net, museum_visitors, periods_to_forecast):
     return forecasts
 
 
-def run_MLP(museum_visitors, seasonality, dates):
+def run_MLP(museum_visitors, dates):
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
     cutpoint = int(0.8 * len(museum_visitors.Visitors))
 
@@ -52,7 +52,7 @@ def run_MLP(museum_visitors, seasonality, dates):
     neural_net.compile(loss='mean_squared_error', optimizer='adam')
     neural_net.fit(training_set_x_scaled, training_set_y_scaled,
                    batch_size=4, epochs=300,
-                   verbose=2, workers=-1, use_multiprocessing=True)
+                   verbose=0, workers=-1, use_multiprocessing=True)
 
     trainScore = neural_net.evaluate(training_set_x_scaled, training_set_y_scaled, verbose=0)
     print('\nTrain Score: MSE: {0:0.3f} RMSE: ({1:0.3f})'.format(trainScore, math.sqrt(trainScore)))
