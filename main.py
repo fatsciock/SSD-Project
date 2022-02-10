@@ -3,8 +3,9 @@ import pandas as pd
 from plot_functions import *
 from utility_functions import *
 from trend_season_functions import *
-from statiscal_algorithm import *
-from neural_algorithms import *
+from SARIMA import *
+from LSTM import *
+from MLP import *
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -86,7 +87,8 @@ if __name__ == '__main__':
     # run_statistical_algorithm(number_of_measurements, museum_visitors, extended_dates)
 
     # Algoritmo predittivo neurale
-    run_neural_algorithms(museum_visitors, seasonality, extended_dates)
+    # run_neural_algorithms(museum_visitors, seasonality, extended_dates)
+    run_LSTM(museum_visitors, extended_dates)
 
 '''
 PARTE 1
