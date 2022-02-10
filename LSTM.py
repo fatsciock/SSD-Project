@@ -53,7 +53,7 @@ def run_LSTM(museum_visitors, dates):
     lstm_model.add(Dense(1))
 
     lstm_model.compile(optimizer="adam", loss="mse")
-    lstm_model.fit(trainX, trainY, epochs=300, batch_size=2, verbose=0)
+    lstm_model.fit(trainX, trainY, epochs=200, batch_size=1, verbose=0)
     # print(lstm_model.summary())
 
     # Previsioni sul training set, test set, e per 24 periodi futuri

@@ -51,7 +51,7 @@ def run_MLP(museum_visitors, dates):
 
     neural_net.compile(loss='mean_squared_error', optimizer='adam')
     neural_net.fit(training_set_x_scaled, training_set_y_scaled,
-                   batch_size=2, epochs=300,
+                   batch_size=2, epochs=100,
                    verbose=0, workers=-1, use_multiprocessing=True)
 
     # Previsioni sul training e sul test set
