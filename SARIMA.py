@@ -6,11 +6,11 @@ from utility_functions import print_loss
 
 
 def run_SARIMA(number_of_measurements, museum_visitors, extended_dates):
+    print("---------------SARIMA---------------")
     cutpoint = int(0.7 * number_of_measurements)
     train_set = museum_visitors.Visitors[:cutpoint]
     test_set = museum_visitors.Visitors[cutpoint:]
     period_to_predict = 24
-    x = np.linspace(0, number_of_measurements - 1, number_of_measurements)
     xfore = np.linspace(number_of_measurements, number_of_measurements - 1 + period_to_predict, period_to_predict)
 
     auto_m = pm.auto_arima(train_set, start_p=0, max_p=12, start_q=0, max_q=12,
