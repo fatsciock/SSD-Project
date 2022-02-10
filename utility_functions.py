@@ -80,3 +80,11 @@ def extend_dates(museum_visitors, periods_to_extend):
     periods = periods_to_extend + len(all_dates)
     extended_dates = pd.date_range(start=start_date, periods=periods, freq='MS').tolist()
     return extended_dates
+
+def create_dataset(dataset, look_back=1):
+    dataX, dataY = [], []
+    for i in range(len(dataset) - look_back):
+        a = dataset[i:(i + look_back)]
+        dataX.append(a)
+        dataY.append(dataset[i + look_back])
+    return np.array(dataX), np.array(dataY)

@@ -4,15 +4,7 @@ from keras.layers import Dense
 from keras.models import Sequential
 from sklearn.preprocessing import MinMaxScaler
 from plot_functions import plot_MLP_forecasts
-
-
-def create_dataset(dataset, look_back=1):
-    dataX, dataY = [], []
-    for i in range(len(dataset) - look_back):
-        a = dataset[i:(i + look_back)]
-        dataX.append(a)
-        dataY.append(dataset[i + look_back])
-    return np.array(dataX), np.array(dataY)
+from utility_functions import create_dataset
 
 
 def forecast_visitors(neural_net, museum_visitors, periods_to_forecast):
@@ -42,13 +34,13 @@ def run_neural_algorithms(museum_visitors, seasonality, dates):
     train_set_scaled = museum_visitors.Scaled[:cutpoint]
     test_set_scaled = museum_visitors.Scaled[cutpoint:]
 
+    periods_to_forecast = 24
+    look_back = 12
+
     data_for_testing_scaled = np.concatenate([train_set_scaled[-look_back:], test_set_scaled])
 
     training_set_x_scaled, training_set_y_scaled = create_dataset(train_set_scaled, look_back)
     test_set_x_scaled, test_set_y_scaled = create_dataset(data_for_testing_scaled, look_back)
-
-    periods_to_forecast = 24
-    look_back = 12
 
     # Costruzione rete neurale
     neural_net = Sequential()
