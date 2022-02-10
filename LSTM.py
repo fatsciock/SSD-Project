@@ -33,7 +33,7 @@ def run_LSTM(museum_visitors, dates):
     lstm_model.add(LSTM(n_hidden, activation="relu", input_shape=(n_output, n_input), dropout=0.05))
     lstm_model.add(Dense(1))
     lstm_model.compile(optimizer="adam", loss="mse")
-    lstm_model.fit(trainX, trainY, epochs=100, batch_size=1)
+    lstm_model.fit(trainX, trainY, epochs=200, batch_size=4)
     print(lstm_model.summary())
 
     trainPredict = lstm_model.predict(trainX)

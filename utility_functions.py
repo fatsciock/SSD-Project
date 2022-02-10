@@ -57,7 +57,7 @@ def check_stationarity(museum):
     data = museum.Visitors.to_numpy()
     plot_autocorrelation(museum)
 
-    cutpoint = int(len(data)/2)
+    cutpoint = int(len(data) / 2)
     t1 = data[:cutpoint]
     t2 = data[cutpoint:]
     check_mean(t1, t2)
@@ -80,6 +80,7 @@ def extend_dates(museum_visitors, periods_to_extend):
     periods = periods_to_extend + len(all_dates)
     extended_dates = pd.date_range(start=start_date, periods=periods, freq='MS').tolist()
     return extended_dates
+
 
 def create_dataset(dataset, look_back=1):
     dataX, dataY = [], []
