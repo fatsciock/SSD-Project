@@ -129,22 +129,19 @@ def plot_all_museums(museum_visitors):
     plt.show()
 
 
-def plot_MLP_forecasts(museum_visitors, predictions_training_y, predictions_test_y, forecasts_y, cutpoint, dates):
-    numbers_of_measurements = len(museum_visitors)
-
+def plot_MLP_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates):
     plt.title("Previsione dei dati su 24 periodi tramite MLP")
-    plt.plot(dates[:numbers_of_measurements], museum_visitors.Visitors, label='Visitatori museo')
-    plt.plot(dates[12:cutpoint], predictions_training_y, label='Previsione sul training set')
-    plt.plot(dates[cutpoint:numbers_of_measurements], predictions_test_y, label='Previsione sul test set')
-    plt.plot(dates[numbers_of_measurements:], forecasts_y, label="Previsione su ulteriori 24 periodi")
-    plt.legend()
-    plt.show()
+    plot_NN_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates)
 
 
 def plot_LSTM_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates):
+    plt.title("Previsione dei dati su 24 periodi tramite LSTM")
+    plot_NN_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates)
+
+
+def plot_NN_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates):
     numbers_of_measurements = len(museum_visitors)
 
-    plt.title("Previsione dei dati su 24 periodi tramite LSTM")
     plt.plot(dates[:numbers_of_measurements], museum_visitors.Visitors.to_numpy(), label='Visitatori museo')
     plt.plot(dates[look_back:cutpoint], train_predict, label='Previsione sul training set')
     plt.plot(dates[cutpoint:numbers_of_measurements], test_predict, label='Previsione sul test set')

@@ -72,4 +72,4 @@ def run_MLP(museum_visitors, dates):
     testscore = RMSE(testY[0], predictions_test[:, 0])
     print('RMSE test: {}'.format(round(testscore, 3)))
 
-    plot_MLP_forecasts(museum_visitors, predictions_train, predictions_test, forecasts, cutpoint, dates)
+    plot_MLP_forecasts(museum_visitors, predictions_train, predictions_test, forecasts, look_back, cutpoint, dates)
