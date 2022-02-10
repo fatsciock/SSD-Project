@@ -1,10 +1,9 @@
-import math
 import numpy as np
 from keras.layers import Dense
 from keras.models import Sequential
 from sklearn.preprocessing import MinMaxScaler
 from plot_functions import plot_MLP_forecasts
-from utility_functions import create_dataset
+from utility_functions import RMSE, create_dataset
 
 
 def forecast_visitors(neural_net, museum_visitors, periods_to_forecast):
@@ -23,6 +22,7 @@ def forecast_visitors(neural_net, museum_visitors, periods_to_forecast):
 
 
 def run_MLP(museum_visitors, dates):
+    print("---------------MLP---------------")
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
     cutpoint = int(0.8 * len(museum_visitors.Visitors))
 
@@ -54,12 +54,6 @@ def run_MLP(museum_visitors, dates):
                    batch_size=4, epochs=300,
                    verbose=0, workers=-1, use_multiprocessing=True)
 
-    trainScore = neural_net.evaluate(training_set_x_scaled, training_set_y_scaled, verbose=0)
-    print('\nTrain Score: MSE: {0:0.3f} RMSE: ({1:0.3f})'.format(trainScore, math.sqrt(trainScore)))
-
-    testScore = neural_net.evaluate(test_set_x_scaled, test_set_y_scaled, verbose=0)
-    print('Test Score: MSE: {0:0.3f} RMSE: ({1:0.3f})'.format(testScore, math.sqrt(testScore)))
-
     # Previsioni sul training e sul test set
     predictions_train = neural_net.predict(training_set_x_scaled)
     predictions_test = neural_net.predict(test_set_x_scaled)
@@ -69,5 +63,19 @@ def run_MLP(museum_visitors, dates):
     predictions_train = scaler.inverse_transform(predictions_train)
     predictions_test = scaler.inverse_transform(predictions_test)
     forecasts = scaler.inverse_transform(forecasts)
+
+    ''' DA TOGLIERE O DECOMMENTARE
+    trainScore = neural_net.evaluate(training_set_x_scaled, training_set_y_scaled, verbose=0)
+    testScore = neural_net.evaluate(test_set_x_scaled, test_set_y_scaled, verbose=0)
+    print("La loss del modello MLP è:")
+    print('train MSE: {0:0.3f} - RMSE: ({1:0.3f})'.format(trainScore, math.sqrt(trainScore)))
+    print('test MSE: {0:0.3f} - RMSE: ({1:0.3f})'.format(testScore, math.sqrt(testScore)))
+    '''
+
+    print("La loss del modello MLP è:")
+    trainscore = RMSE(museum_visitors.Visitors[look_back:cutpoint].to_numpy(), predictions_train)
+    print('RMSE train: {}'.format(round(trainscore, 3)))
+    testscore = RMSE(museum_visitors.Visitors[cutpoint:].to_numpy(), predictions_test)
+    print('RMSE test: {}'.format(round(testscore, 3)))
 
     plot_MLP_forecasts(museum_visitors, predictions_train, predictions_test, forecasts, cutpoint, dates)
