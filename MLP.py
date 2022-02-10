@@ -73,3 +73,5 @@ def run_MLP(museum_visitors, dates):
     print('RMSE test: {}'.format(round(testscore, 3)))
 
     plot_MLP_forecasts(museum_visitors, predictions_train, predictions_test, forecasts, look_back, cutpoint, dates)
+
+    return np.concatenate((predictions_train, predictions_test)).reshape((-1, ))

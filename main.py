@@ -6,6 +6,7 @@ from trend_season_functions import run_TREND_SEASON
 from SARIMA import run_SARIMA
 from LSTM import run_LSTM
 from MLP import run_MLP
+from diebold_mariano_test import dm_test
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -27,15 +28,21 @@ if __name__ == '__main__':
     extended_dates = extend_dates(museum_visitors, period_to_predict)
 
     # Creazione del modello tramite ricerca del trend, stagionalità e relativi coefficienti
-    run_TREND_SEASON(museum_visitors, number_of_measurements, period_to_predict, extended_dates)
+    # run_TREND_SEASON(museum_visitors, number_of_measurements, period_to_predict, extended_dates)
 
     # Algoritmo predittivo statistico
     # check_stationarity(museum_visitors)
-    run_SARIMA(number_of_measurements, museum_visitors, extended_dates)
+    # run_SARIMA(number_of_measurements, museum_visitors, extended_dates)
 
     # Algoritmo predittivo neurale
-    run_MLP(museum_visitors, extended_dates)
-    run_LSTM(museum_visitors, extended_dates)
+    MLP_predictions = run_MLP(museum_visitors, extended_dates)
+    LSTM_predictions = run_LSTM(museum_visitors, extended_dates)
+
+    dm_test_on_predictions = dm_test(museum_visitors.Visitors[12:], MLP_predictions, LSTM_predictions)
+
+    print("-------Diebold-Mariano Test-------")
+    print("Risultato del test Diebold-Mariano confrontando le previsioni di MLP e di LSTM: \nDM={} \np_value={}"
+          .format(dm_test_on_predictions.DM, dm_test_on_predictions.p_value))
 
 '''
 PARTE 1

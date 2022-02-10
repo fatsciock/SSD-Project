@@ -75,3 +75,5 @@ def run_LSTM(museum_visitors, dates):
     print("RMSE test: {}".format(round(testscore, 3)))
 
     plot_LSTM_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates)
+
+    return np.concatenate((train_predict, test_predict)).reshape((-1, ))
