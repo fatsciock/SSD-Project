@@ -56,10 +56,12 @@ def run_LSTM(museum_visitors, dates):
     lstm_model.fit(trainX, trainY, epochs=300, batch_size=2, verbose=0)
     # print(lstm_model.summary())
 
+    # Previsioni sul training set, test set, e per 24 periodi futuri
     train_predict = lstm_model.predict(trainX)
     test_predict = lstm_model.predict(testX)
     forecasts = forecast_visitors(lstm_model, museum_visitors, periods_to_forecast, look_back)
 
+    # Scaling dei dati nel formato originale
     train_predict = scaler.inverse_transform(train_predict)
     trainY = scaler.inverse_transform([trainY])
     test_predict = scaler.inverse_transform(test_predict)

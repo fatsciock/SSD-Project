@@ -61,21 +61,15 @@ def run_MLP(museum_visitors, dates):
 
     # Riscalo i dati nel formato originale
     predictions_train = scaler.inverse_transform(predictions_train)
+    trainY = scaler.inverse_transform([training_set_y_scaled])
     predictions_test = scaler.inverse_transform(predictions_test)
+    testY = scaler.inverse_transform([test_set_y_scaled])
     forecasts = scaler.inverse_transform(forecasts)
 
-    ''' DA TOGLIERE O DECOMMENTARE
-    trainScore = neural_net.evaluate(training_set_x_scaled, training_set_y_scaled, verbose=0)
-    testScore = neural_net.evaluate(test_set_x_scaled, test_set_y_scaled, verbose=0)
     print("La loss del modello MLP è:")
-    print('train MSE: {0:0.3f} - RMSE: ({1:0.3f})'.format(trainScore, math.sqrt(trainScore)))
-    print('test MSE: {0:0.3f} - RMSE: ({1:0.3f})'.format(testScore, math.sqrt(testScore)))
-    '''
-
-    print("La loss del modello MLP è:")
-    trainscore = RMSE(museum_visitors.Visitors[look_back:cutpoint].to_numpy(), predictions_train)
+    trainscore = RMSE(trainY[0], predictions_train[:, 0])
     print('RMSE train: {}'.format(round(trainscore, 3)))
-    testscore = RMSE(museum_visitors.Visitors[cutpoint:].to_numpy(), predictions_test)
+    testscore = RMSE(testY[0], predictions_test[:, 0])
     print('RMSE test: {}'.format(round(testscore, 3)))
 
     plot_MLP_forecasts(museum_visitors, predictions_train, predictions_test, forecasts, cutpoint, dates)
