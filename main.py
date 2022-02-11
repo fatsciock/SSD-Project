@@ -28,11 +28,11 @@ if __name__ == '__main__':
     extended_dates = extend_dates(museum_visitors, period_to_predict)
 
     # Creazione del modello tramite ricerca del trend, stagionalità e relativi coefficienti
-    # run_TREND_SEASON(museum_visitors, number_of_measurements, period_to_predict, extended_dates)
+    run_TREND_SEASON(museum_visitors, number_of_measurements, period_to_predict, extended_dates)
 
     # Algoritmo predittivo statistico
     # check_stationarity(museum_visitors)
-    # run_SARIMA(number_of_measurements, museum_visitors, extended_dates)
+    run_SARIMA(number_of_measurements, museum_visitors, extended_dates)
 
     # Algoritmo predittivo neurale
     MLP_predictions = run_MLP(museum_visitors, extended_dates)
@@ -42,7 +42,10 @@ if __name__ == '__main__':
 
     print("-------Diebold-Mariano Test-------")
     print("Risultato del test Diebold-Mariano confrontando le previsioni di MLP e di LSTM: \nDM={} \np_value={}"
-          .format(dm_test_on_predictions.DM, dm_test_on_predictions.p_value))
+          .format(round(dm_test_on_predictions.DM, 4), round(dm_test_on_predictions.p_value, 4)))
+    print("a = 0.05, z-score(a/2) = 1.96")
+    print("HO rifiutata: le 2 previsioni non hanno la stessa accuratezza" if np.abs(dm_test_on_predictions.DM) > 1.96
+          else "HO non rifiutata: le 2 previsioni hanno la stessa accuratezza")
 
 '''
 PARTE 1
@@ -54,6 +57,6 @@ PARTE 1
 - Fare previsione con funzione di trend - DONE  
 
 PARTE 2
-- Fare previsione con modelli predittivi statistici e neurali
-- Analizzare e confrontare i risultati
+- Fare previsione con modelli predittivi statistici e neurali - DONE
+- Analizzare e confrontare i risultati - DONE
 '''
