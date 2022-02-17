@@ -20,7 +20,7 @@ def forecast_visitors(neural_net, museum_visitors, periods_to_forecast, look_bac
     return forecasts
 
 
-def run_LSTM(museum_visitors, dates):
+def run_LSTM(museum_visitors, dates, periods_to_forecast):
     print("---------------LSTM---------------")
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
     cutpoint = int(0.8 * len(museum_visitors.Visitors))
@@ -29,7 +29,6 @@ def run_LSTM(museum_visitors, dates):
     n_input = look_back
     n_hidden = 20
     n_output = 1
-    periods_to_forecast = 24
 
     # Preprocessing dei dati
     scaler = MinMaxScaler((0.1, 0.9))

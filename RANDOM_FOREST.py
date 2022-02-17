@@ -18,7 +18,7 @@ def forecast_visitors(neural_net, museum_visitors, periods_to_forecast, look_bac
     return forecasts
 
 
-def run_RANDOM_FOREST(museum_visitors, dates, period_to_predict):
+def run_RANDOM_FOREST(museum_visitors, dates, periods_to_forecast):
     print("---------------RANDOM FOREST---------------")
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
 
@@ -39,7 +39,7 @@ def run_RANDOM_FOREST(museum_visitors, dates, period_to_predict):
     model.fit(train_set_x, train_set_y)
     train_predict = scaler.inverse_transform(model.predict(train_set_x).reshape(-1, 1))
     test_predict = scaler.inverse_transform(model.predict(test_set_x).reshape(-1, 1))
-    forecasts = scaler.inverse_transform(forecast_visitors(model, tmp, period_to_predict, look_back))
+    forecasts = scaler.inverse_transform(forecast_visitors(model, tmp, periods_to_forecast, look_back))
 
     print("La loss del modello Random Forest è:")
     trainscore = RMSE(museum_visitors.Visitors[12:cutpoint].to_numpy(), train_predict.reshape(-1))

@@ -23,22 +23,22 @@ if __name__ == '__main__':
     # Esclusione dati del periodo COVID
     museum_visitors = museum_visitors.iloc[:74]
     number_of_measurements = len(museum_visitors.Visitors)
-    period_to_predict = 24
+    periods_to_forecast = 24
 
     # Estensione delle date per includere i valori predetti
-    extended_dates = extend_dates(museum_visitors, period_to_predict)
+    extended_dates = extend_dates(museum_visitors, periods_to_forecast)
 
     # Creazione del modello tramite ricerca del trend, stagionalità e relativi coefficienti
-    run_TREND_SEASON(museum_visitors, number_of_measurements, period_to_predict, extended_dates)
+    run_TREND_SEASON(museum_visitors, number_of_measurements, periods_to_forecast, extended_dates)
 
     # Algoritmo predittivo statistico
     # check_stationarity(museum_visitors)
-    run_SARIMA(number_of_measurements, museum_visitors, extended_dates)
+    run_SARIMA(number_of_measurements, museum_visitors, extended_dates, periods_to_forecast)
 
     # Algoritmo predittivo neurale
-    MLP_predictions = run_MLP(museum_visitors, extended_dates)
-    LSTM_predictions = run_LSTM(museum_visitors, extended_dates)
-    RF_predictions = run_RANDOM_FOREST(museum_visitors, extended_dates, period_to_predict)
+    MLP_predictions = run_MLP(museum_visitors, extended_dates, periods_to_forecast)
+    LSTM_predictions = run_LSTM(museum_visitors, extended_dates, periods_to_forecast)
+    RF_predictions = run_RANDOM_FOREST(museum_visitors, extended_dates, periods_to_forecast)
 
     dm_test_on_predictions = dm_test(museum_visitors.Visitors[12:], MLP_predictions, LSTM_predictions)
 

@@ -5,13 +5,12 @@ from plot_functions import plot_SARIMA_predicition, plot_diagnostic
 from utility_functions import print_loss
 
 
-def run_SARIMA(number_of_measurements, museum_visitors, extended_dates):
+def run_SARIMA(number_of_measurements, museum_visitors, extended_dates, periods_to_forecast):
     print("---------------SARIMA---------------")
     cutpoint = int(0.7 * number_of_measurements)
     train_set = museum_visitors.Visitors[:cutpoint]
     test_set = museum_visitors.Visitors[cutpoint:]
-    period_to_predict = 24
-    xfore = np.linspace(number_of_measurements, number_of_measurements - 1 + period_to_predict, period_to_predict)
+    xfore = np.linspace(number_of_measurements, number_of_measurements - 1 + periods_to_forecast, periods_to_forecast)
 
     auto_m = pm.auto_arima(train_set, start_p=0, max_p=12, start_q=0, max_q=12,
                            start_P=0, max_P=2, start_Q=0, max_Q=2, m=12, stepwise=False,
@@ -27,9 +26,10 @@ def run_SARIMA(number_of_measurements, museum_visitors, extended_dates):
     # plot_diagnostic(sarima_fit_m)
 
     ypred = sarima_fit_m.predict(start=1, end=len(train_set))
-    forecast = sarima_fit_m.get_forecast(steps=len(test_set) + period_to_predict)
+    forecast = sarima_fit_m.get_forecast(steps=len(test_set) + periods_to_forecast)
     yfore = forecast.predicted_mean
 
-    plot_SARIMA_predicition(extended_dates, xfore, yfore, ypred, forecast.conf_int(), cutpoint, period_to_predict, museum_visitors)
+    plot_SARIMA_predicition(extended_dates, xfore, yfore, ypred, forecast.conf_int(), cutpoint,
+                            periods_to_forecast, museum_visitors)
 
-    print_loss(yfore[:-period_to_predict], ypred, museum_visitors.Visitors.to_numpy(), cutpoint)
+    print_loss(yfore[:-periods_to_forecast], ypred, museum_visitors.Visitors.to_numpy(), cutpoint)

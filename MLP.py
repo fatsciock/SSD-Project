@@ -21,7 +21,7 @@ def forecast_visitors(neural_net, museum_visitors, periods_to_forecast):
     return forecasts
 
 
-def run_MLP(museum_visitors, dates):
+def run_MLP(museum_visitors, dates, periods_to_forecast):
     print("---------------MLP---------------")
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
     cutpoint = int(0.8 * len(museum_visitors.Visitors))
@@ -34,7 +34,6 @@ def run_MLP(museum_visitors, dates):
     train_set_scaled = museum_visitors.Scaled[:cutpoint]
     test_set_scaled = museum_visitors.Scaled[cutpoint:]
 
-    periods_to_forecast = 24
     look_back = 12
 
     data_for_testing_scaled = np.concatenate([train_set_scaled[-look_back:], test_set_scaled])
