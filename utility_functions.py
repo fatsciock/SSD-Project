@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from diebold_mariano_test import dm_test
 from plot_functions import plot_autocorrelation
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.stattools import kpss
@@ -89,3 +89,12 @@ def create_dataset(dataset, look_back=1):
         dataX.append(a)
         dataY.append(dataset[i + look_back])
     return np.array(dataX), np.array(dataY)
+
+
+def diebold_mariano(data, pred1, pred2, name1, name2):
+    dm_result = dm_test(data, pred1, pred2)
+    print("Risultato del test Diebold-Mariano confrontando le previsioni di {} e di {}: \nDM={} \np_value={}"
+          .format(name1, name2, round(dm_result.DM, 4), round(dm_result.p_value, 4)))
+    print("a = 0.05, z-score(a/2) = 1.96")
+    print("HO rifiutata: le 2 previsioni non hanno la stessa accuratezza\n" if np.abs(dm_result.DM) > 1.96
+          else "HO non rifiutata: le 2 previsioni hanno la stessa accuratezza\n")

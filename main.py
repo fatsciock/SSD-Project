@@ -6,8 +6,7 @@ from trend_season_functions import run_TREND_SEASON
 from SARIMA import run_SARIMA
 from LSTM import run_LSTM
 from MLP import run_MLP
-from RANDOM_FOREST import  run_RANDOM_FOREST
-from diebold_mariano_test import dm_test
+from RANDOM_FOREST import run_RANDOM_FOREST
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -40,14 +39,16 @@ if __name__ == '__main__':
     LSTM_predictions = run_LSTM(museum_visitors, extended_dates, periods_to_forecast)
     RF_predictions = run_RANDOM_FOREST(museum_visitors, extended_dates, periods_to_forecast)
 
-    dm_test_on_predictions = dm_test(museum_visitors.Visitors[12:], MLP_predictions, LSTM_predictions)
-
     print("-------Diebold-Mariano Test-------")
-    print("Risultato del test Diebold-Mariano confrontando le previsioni di MLP e di LSTM: \nDM={} \np_value={}"
-          .format(round(dm_test_on_predictions.DM, 4), round(dm_test_on_predictions.p_value, 4)))
-    print("a = 0.05, z-score(a/2) = 1.96")
-    print("HO rifiutata: le 2 previsioni non hanno la stessa accuratezza" if np.abs(dm_test_on_predictions.DM) > 1.96
-          else "HO non rifiutata: le 2 previsioni hanno la stessa accuratezza")
+
+    # Confronto MLP e LSTM
+    diebold_mariano(museum_visitors.Visitors[12:], MLP_predictions, LSTM_predictions, "MLP", "LSTM")
+
+    # Confronto RF e MLP
+    diebold_mariano(museum_visitors.Visitors[12:], RF_predictions, MLP_predictions, "RF", "MLP")
+
+    # Confronto RF e LSTM
+    diebold_mariano(museum_visitors.Visitors[12:], RF_predictions, LSTM_predictions, "RF", "LSTM")
 
 '''
 PARTE 1
