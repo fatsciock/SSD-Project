@@ -37,6 +37,7 @@ def run_RANDOM_FOREST(museum_visitors, dates, periods_to_forecast):
 
     model = RandomForestRegressor(n_estimators=200)
     model.fit(train_set_x, train_set_y)
+
     train_predict = scaler.inverse_transform(model.predict(train_set_x).reshape(-1, 1))
     test_predict = scaler.inverse_transform(model.predict(test_set_x).reshape(-1, 1))
     forecasts = scaler.inverse_transform(forecast_visitors(model, tmp, periods_to_forecast, look_back))

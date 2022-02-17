@@ -28,15 +28,17 @@ if __name__ == '__main__':
     extended_dates = extend_dates(museum_visitors, periods_to_forecast)
 
     # Creazione del modello tramite ricerca del trend, stagionalità e relativi coefficienti
-    #run_TREND_SEASON(museum_visitors, number_of_measurements, periods_to_forecast, extended_dates)
+    run_TREND_SEASON(museum_visitors, number_of_measurements, periods_to_forecast, extended_dates)
 
     # Algoritmo predittivo statistico
     # check_stationarity(museum_visitors)
     run_SARIMA(number_of_measurements, museum_visitors, extended_dates, periods_to_forecast)
 
-    # Algoritmo predittivo neurale
+    # Algoritmi predittivo neurali
     MLP_predictions = run_MLP(museum_visitors, extended_dates, periods_to_forecast)
     LSTM_predictions = run_LSTM(museum_visitors, extended_dates, periods_to_forecast)
+
+    # Algoritmo Machine Learning
     RF_predictions = run_RANDOM_FOREST(museum_visitors, extended_dates, periods_to_forecast)
 
     print("-------Diebold-Mariano Test-------")
