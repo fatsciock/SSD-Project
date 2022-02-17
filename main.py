@@ -6,7 +6,7 @@ from trend_season_functions import run_TREND_SEASON
 from SARIMA import run_SARIMA
 from LSTM import run_LSTM
 from MLP import run_MLP
-from RANDOM_FOREST import  run_RANDOM_FOREST
+from RANDOM_FOREST import run_RANDOM_FOREST
 from diebold_mariano_test import dm_test
 
 if __name__ == '__main__':
@@ -35,9 +35,11 @@ if __name__ == '__main__':
     # check_stationarity(museum_visitors)
     run_SARIMA(number_of_measurements, museum_visitors, extended_dates, periods_to_forecast)
 
-    # Algoritmo predittivo neurale
+    # Algoritmi predittivo neurali
     MLP_predictions = run_MLP(museum_visitors, extended_dates, periods_to_forecast)
     LSTM_predictions = run_LSTM(museum_visitors, extended_dates, periods_to_forecast)
+
+    # Algoritmo Machine Learning
     RF_predictions = run_RANDOM_FOREST(museum_visitors, extended_dates, periods_to_forecast)
 
     dm_test_on_predictions = dm_test(museum_visitors.Visitors[12:], MLP_predictions, LSTM_predictions)

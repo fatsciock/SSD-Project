@@ -27,7 +27,7 @@ def run_MLP(museum_visitors, dates, periods_to_forecast):
     cutpoint = int(0.8 * len(museum_visitors.Visitors))
 
     # Preprocessing dei dati
-    scaler = MinMaxScaler((0.1, 0.9))
+    scaler = MinMaxScaler((0.2, 0.8))
     scaler.fit(museum_visitors.Visitors.to_numpy().reshape(-1, 1))
     museum_visitors['Scaled'] = scaler.transform(museum_visitors.Visitors.to_numpy().reshape(-1, 1))
 
@@ -44,13 +44,13 @@ def run_MLP(museum_visitors, dates, periods_to_forecast):
     # Costruzione rete neurale
     neural_net = Sequential()
     # strato di input e primo livello nascosto
-    neural_net.add(Dense(look_back * 2, input_dim=look_back, activation='relu'))
+    neural_net.add(Dense(look_back * 2 + 1, input_dim=look_back, activation='relu'))
     # Livello di output a singolo neurone
     neural_net.add(Dense(1))
 
     neural_net.compile(loss='mean_squared_error', optimizer='adam')
     neural_net.fit(training_set_x_scaled, training_set_y_scaled,
-                   batch_size=2, epochs=100,
+                   batch_size=4, epochs=200,
                    verbose=0, workers=-1, use_multiprocessing=True)
 
     # Previsioni sul training e sul test set
@@ -60,17 +60,17 @@ def run_MLP(museum_visitors, dates, periods_to_forecast):
 
     # Riscalo i dati nel formato originale
     predictions_train = scaler.inverse_transform(predictions_train)
-    trainY = scaler.inverse_transform([training_set_y_scaled])
+    training_set_y = scaler.inverse_transform([training_set_y_scaled])
     predictions_test = scaler.inverse_transform(predictions_test)
-    testY = scaler.inverse_transform([test_set_y_scaled])
+    test_set_y = scaler.inverse_transform([test_set_y_scaled])
     forecasts = scaler.inverse_transform(forecasts)
 
     print("La loss del modello MLP è:")
-    trainscore = RMSE(trainY[0], predictions_train[:, 0])
+    trainscore = RMSE(training_set_y[0], predictions_train[:, 0])
     print('RMSE train: {}'.format(round(trainscore, 3)))
-    testscore = RMSE(testY[0], predictions_test[:, 0])
+    testscore = RMSE(test_set_y[0], predictions_test[:, 0])
     print('RMSE test: {}'.format(round(testscore, 3)))
 
     plot_MLP_forecasts(museum_visitors, predictions_train, predictions_test, forecasts, look_back, cutpoint, dates)
 
-    return np.concatenate((predictions_train, predictions_test)).reshape((-1, ))
+    return np.concatenate((predictions_train, predictions_test)).reshape((-1,))

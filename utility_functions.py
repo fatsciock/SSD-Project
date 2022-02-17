@@ -1,9 +1,8 @@
 import numpy as np
 import pandas as pd
-from datetime import datetime
-from plot_functions import plot_autocorrelation
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.stattools import kpss
+from plot_functions import plot_autocorrelation
 
 
 def get_visitors_of(museum_name, all_visitors):
