@@ -2,7 +2,7 @@ import numpy as np
 import pmdarima as pm
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from plot_functions import plot_SARIMA_predicition, plot_diagnostic
-from utility_functions import print_loss
+from utility_functions import RMSE
 
 
 def run_SARIMA(number_of_measurements, museum_visitors, extended_dates, periods_to_forecast):
@@ -29,7 +29,11 @@ def run_SARIMA(number_of_measurements, museum_visitors, extended_dates, periods_
     forecast = sarima_fit_m.get_forecast(steps=len(test_set) + periods_to_forecast)
     yfore = forecast.predicted_mean
 
+    print("La loss del modello SARIMA è:")
+    trainscore = RMSE(train_set, ypred)
+    print("RMSE train: {}".format(round(trainscore, 3)))
+    testscore = RMSE(test_set, yfore[:periods_to_forecast-1])
+    print("RMSE test: {}".format(round(testscore, 3)))
+
     plot_SARIMA_predicition(extended_dates, xfore, yfore, ypred, forecast.conf_int(), cutpoint,
                             periods_to_forecast, museum_visitors)
-
-    print_loss(yfore[:-periods_to_forecast], ypred, museum_visitors.Visitors.to_numpy(), cutpoint)

@@ -28,7 +28,7 @@ if __name__ == '__main__':
     extended_dates = extend_dates(museum_visitors, periods_to_forecast)
 
     # Creazione del modello tramite ricerca del trend, stagionalità e relativi coefficienti
-    run_TREND_SEASON(museum_visitors, number_of_measurements, periods_to_forecast, extended_dates)
+    #run_TREND_SEASON(museum_visitors, number_of_measurements, periods_to_forecast, extended_dates)
 
     # Algoritmo predittivo statistico
     # check_stationarity(museum_visitors)
