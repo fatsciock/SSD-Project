@@ -139,6 +139,11 @@ def plot_LSTM_forecasts(museum_visitors, train_predict, test_predict, forecasts,
     plot_NN_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates)
 
 
+def plot_RF_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates):
+    plt.title("Previsione dei dati su 24 periodi tramite Random Forest")
+    plot_NN_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates)
+
+
 def plot_NN_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates):
     numbers_of_measurements = len(museum_visitors)
 
