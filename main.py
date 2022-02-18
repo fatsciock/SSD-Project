@@ -23,6 +23,7 @@ if __name__ == '__main__':
     museum_visitors = museum_visitors.iloc[:74]
     number_of_measurements = len(museum_visitors.Visitors)
     periods_to_forecast = 24
+    cutpoint = int(0.8 * len(museum_visitors.Visitors))
 
     # Estensione delle date per includere i valori predetti
     extended_dates = extend_dates(museum_visitors, periods_to_forecast)
@@ -35,22 +36,22 @@ if __name__ == '__main__':
     run_SARIMA(number_of_measurements, museum_visitors, extended_dates, periods_to_forecast)
 
     # Algoritmi predittivo neurali
-    MLP_predictions = run_MLP(museum_visitors, extended_dates, periods_to_forecast)
-    LSTM_predictions = run_LSTM(museum_visitors, extended_dates, periods_to_forecast)
+    MLP_predictions = run_MLP(museum_visitors, extended_dates, periods_to_forecast, cutpoint)
+    LSTM_predictions = run_LSTM(museum_visitors, extended_dates, periods_to_forecast, cutpoint)
 
     # Algoritmo Machine Learning
-    RF_predictions = run_RANDOM_FOREST(museum_visitors, extended_dates, periods_to_forecast)
+    RF_predictions = run_RANDOM_FOREST(museum_visitors, extended_dates, periods_to_forecast, cutpoint)
 
-    print("-------Diebold-Mariano Test-------")
+    print("\n-------Diebold-Mariano Test-------")
 
     # Confronto MLP e LSTM
-    diebold_mariano(museum_visitors.Visitors[12:], MLP_predictions, LSTM_predictions, "MLP", "LSTM")
+    diebold_mariano(museum_visitors.Visitors[cutpoint:], MLP_predictions, LSTM_predictions, "MLP", "LSTM")
 
     # Confronto RF e MLP
-    diebold_mariano(museum_visitors.Visitors[12:], RF_predictions, MLP_predictions, "RF", "MLP")
+    diebold_mariano(museum_visitors.Visitors[cutpoint:], RF_predictions, MLP_predictions, "RF", "MLP")
 
     # Confronto RF e LSTM
-    diebold_mariano(museum_visitors.Visitors[12:], RF_predictions, LSTM_predictions, "RF", "LSTM")
+    diebold_mariano(museum_visitors.Visitors[cutpoint:], RF_predictions, LSTM_predictions, "RF", "LSTM")
 
 '''
 PARTE 1

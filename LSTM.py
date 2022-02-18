@@ -20,10 +20,8 @@ def forecast_visitors(neural_net, museum_visitors, periods_to_forecast, look_bac
     return forecasts
 
 
-def run_LSTM(museum_visitors, dates, periods_to_forecast):
-    print("---------------LSTM---------------")
+def run_LSTM(museum_visitors, dates, periods_to_forecast, cutpoint):
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
-    cutpoint = int(0.8 * len(museum_visitors.Visitors))
 
     look_back = 12
     n_input = look_back
@@ -67,6 +65,7 @@ def run_LSTM(museum_visitors, dates, periods_to_forecast):
     testY = scaler.inverse_transform([testY])
     forecasts = scaler.inverse_transform(forecasts)
 
+    print("\n---------------LSTM---------------")
     print("La loss del modello LSTM è:")
     trainscore = RMSE(trainY[0], train_predict[:, 0])
     print("RMSE train: {}".format(round(trainscore, 3)))
@@ -75,4 +74,4 @@ def run_LSTM(museum_visitors, dates, periods_to_forecast):
 
     plot_LSTM_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates)
 
-    return np.concatenate((train_predict, test_predict)).reshape((-1, ))
+    return test_predict.reshape(-1, )

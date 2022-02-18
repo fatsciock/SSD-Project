@@ -18,11 +18,9 @@ def forecast_visitors(neural_net, museum_visitors, periods_to_forecast, look_bac
     return forecasts
 
 
-def run_RANDOM_FOREST(museum_visitors, dates, periods_to_forecast):
-    print("---------------RANDOM FOREST---------------")
+def run_RANDOM_FOREST(museum_visitors, dates, periods_to_forecast, cutpoint):
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
 
-    cutpoint = int(0.8 * len(museum_visitors.Visitors))
     look_back = 12
 
     scaler = MinMaxScaler((0.1, 0.9))
@@ -42,6 +40,7 @@ def run_RANDOM_FOREST(museum_visitors, dates, periods_to_forecast):
     test_predict = scaler.inverse_transform(model.predict(test_set_x).reshape(-1, 1))
     forecasts = scaler.inverse_transform(forecast_visitors(model, tmp, periods_to_forecast, look_back))
 
+    print("\n---------------RANDOM FOREST---------------")
     print("La loss del modello Random Forest è:")
     trainscore = RMSE(museum_visitors.Visitors[12:cutpoint].to_numpy(), train_predict.reshape(-1))
     print("RMSE train: {}".format(round(trainscore, 3)))
@@ -50,4 +49,4 @@ def run_RANDOM_FOREST(museum_visitors, dates, periods_to_forecast):
 
     plot_RF_forecasts(museum_visitors, train_predict, test_predict, forecasts, look_back, cutpoint, dates)
 
-    return np.concatenate((train_predict, test_predict)).reshape((-1,))
+    return test_predict.reshape(-1,)

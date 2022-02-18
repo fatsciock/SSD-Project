@@ -93,8 +93,8 @@ def create_dataset(dataset, look_back=1):
 
 def diebold_mariano(data, pred1, pred2, name1, name2):
     dm_result = dm_test(data, pred1, pred2)
-    print("Risultato del test Diebold-Mariano confrontando le previsioni di {} e di {}: \nDM={} \np_value={}"
+    print("\nRisultato del test Diebold-Mariano confrontando le previsioni di {} e di {}: \nDM={} \np_value={}"
           .format(name1, name2, round(dm_result.DM, 4), round(dm_result.p_value, 4)))
     print("a = 0.05, z-score(a/2) = 1.96")
     print("HO rifiutata: le 2 previsioni non hanno la stessa accuratezza\n" if np.abs(dm_result.DM) > 1.96
-          else "HO non rifiutata: le 2 previsioni hanno la stessa accuratezza\n")
+          else "HO non rifiutata: le 2 previsioni hanno la stessa accuratezza")

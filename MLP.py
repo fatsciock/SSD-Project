@@ -21,10 +21,8 @@ def forecast_visitors(neural_net, museum_visitors, periods_to_forecast):
     return forecasts
 
 
-def run_MLP(museum_visitors, dates, periods_to_forecast):
-    print("---------------MLP---------------")
+def run_MLP(museum_visitors, dates, periods_to_forecast, cutpoint):
     museum_visitors.Visitors = museum_visitors.Visitors.astype('float32')
-    cutpoint = int(0.8 * len(museum_visitors.Visitors))
 
     # Preprocessing dei dati
     scaler = MinMaxScaler((0.2, 0.8))
@@ -65,6 +63,7 @@ def run_MLP(museum_visitors, dates, periods_to_forecast):
     test_set_y = scaler.inverse_transform([test_set_y_scaled])
     forecasts = scaler.inverse_transform(forecasts)
 
+    print("\n---------------MLP---------------")
     print("La loss del modello MLP è:")
     trainscore = RMSE(training_set_y[0], predictions_train[:, 0])
     print('RMSE train: {}'.format(round(trainscore, 3)))
@@ -73,4 +72,4 @@ def run_MLP(museum_visitors, dates, periods_to_forecast):
 
     plot_MLP_forecasts(museum_visitors, predictions_train, predictions_test, forecasts, look_back, cutpoint, dates)
 
-    return np.concatenate((predictions_train, predictions_test)).reshape((-1,))
+    return predictions_test.reshape(-1,)
